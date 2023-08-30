@@ -20,7 +20,6 @@
 #include "CClock.h"
 #include "Sprite2.h"
 #include "CSprite.h"
-#include "CTimeCycle2.h"
 
 
 RwTexture* gpCloudTex[5];
@@ -65,8 +64,8 @@ void
 CClouds::Update(void)
 {
 	float s = sin(TheCamera.m_fOrientation - 0.85f);
-	CloudRotation += CWeather::Wind * s * 0.001f * CTimer::ms_fTimeStep;
-	IndividualRotation += (CWeather::Wind * CTimer::ms_fTimeStep * 0.5f + 0.3f * CTimer::ms_fTimeStep) * 60.0f;
+	CloudRotation += CWeather::Wind * s * 0.001f * CTimer::ms_fOldTimeStep;
+	IndividualRotation += (CWeather::Wind * CTimer::ms_fTimeStep * 0.5f + 0.3f * CTimer::ms_fOldTimeStep) * 60.0f;
 }
 
 
@@ -99,6 +98,7 @@ uint8_t BowRed[6] = { 30, 30, 30, 10, 0, 15 };
 uint8_t BowGreen[6] = { 0, 15, 30, 30, 0, 0 };
 uint8_t BowBlue[6] = { 0, 0, 0, 10, 30, 30 };
 
+
 void
 CClouds::Render(void)
 {
@@ -113,7 +113,7 @@ CClouds::Render(void)
 	RwV3d screenpos;
 	RwV3d worldpos;
 
-	const auto campos = TheCamera.GetPosition();
+	CVector campos = TheCamera.GetPosition();
 	float rot_sin = sin(CloudRotation);
 	float rot_cos = cos(CloudRotation);
 	int fluffyalpha = 160 * (1.0f - max(CWeather::Foggyness, CWeather::ExtraSunnyness));
@@ -131,13 +131,14 @@ CClouds::Render(void)
 
 			if (CSprite::CalcScreenCoors(worldpos, &screenpos, &szx, &szy, false, false)) {
 				sundist = sqrt(SQR(screenpos.x - CCoronas::SunScreenX) + SQR(screenpos.y - CCoronas::SunScreenY));
-				int tr = CTimeCycle2::GetFluffyCloudsTopRed();
-				int tg = CTimeCycle2::GetFluffyCloudsTopGreen();
-				int tb = CTimeCycle2::GetFluffyCloudsTopBlue();
-				int br = CTimeCycle2::GetFluffyCloudsBottomRed();
-				int bg = CTimeCycle2::GetFluffyCloudsBottomGreen();
-				int bb = CTimeCycle2::GetFluffyCloudsBottomBlue();
-				int distLimit = (3 * SCREEN_WIDTH) / 4;
+				int tr = (170, 170, 170);
+				int tg = (170, 170, 170);
+				int tb = (170, 170, 170);
+				int br = (0, 0, 0);
+				int bg = (0, 0, 0);
+				int bb = (0, 0, 0);
+
+					int distLimit = (3 * SCREEN_WIDTH) / 4;
 				if (sundist < distLimit) {
 					hilight = (1.0f - max(CWeather::Foggyness, CWeather::CloudCoverage)) * (1.0f - sundist / (float)distLimit);
 					tr = tr * (1.0f - hilight) + 255 * hilight;
@@ -165,8 +166,8 @@ CClouds::Render(void)
 		CSprite2::FlushSpriteBuffer();
 
 		// Highlights
-		RwRenderStateSet(rwRENDERSTATESRCBLEND, (void*)rwBLENDONE);
-		RwRenderStateSet(rwRENDERSTATEDESTBLEND, (void*)rwBLENDONE);
+		RwRenderStateSet(rwRENDERSTATESRCBLEND, (void*)rwBLENDSRCALPHA);
+		RwRenderStateSet(rwRENDERSTATEDESTBLEND, (void*)rwBLENDINVSRCALPHA);
 		RwRenderStateSet(rwRENDERSTATETEXTURERASTER, RwTextureGetRaster(gpCloudTex[4]));
 
 		for (i = 0; i < 37; i++) {
@@ -186,3 +187,4 @@ CClouds::Render(void)
 		CSprite2::FlushSpriteBuffer();
 	}
 }
+
