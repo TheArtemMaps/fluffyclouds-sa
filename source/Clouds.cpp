@@ -1,7 +1,5 @@
 #include "plugin.h"
 
-#include "RenderBuffer.h"
-
 #include "CGeneral.h"
 #include "CTimer.h"
 #include "CWeather.h"
@@ -24,25 +22,30 @@
 
 RwTexture* gpCloudTex[5];
 
+CRGBA CClouds::ms_colourTop;
+CRGBA CClouds::ms_colourBottom;
+//bool CClouds::FluffyCloudsInvisible;
+//int32_t fluffyalpha2 = 160 * (1.0f - max(CWeather::Foggyness, CWeather::ExtraSunnyness));
 float CClouds::ms_cameraRoll;
 float CClouds::CloudRotation;
 uint32_t CClouds::IndividualRotation;
-
 void
 CClouds::Init(void)
 {
 	CTxdStore::PushCurrentTxd();
-	int32_t slot2 = CTxdStore::AddTxdSlot("fluffycloudsSA");
-	CTxdStore::LoadTxd(slot2, "MODELS\\FLUFFYCLOUDSSA.TXD");
-	int32_t slot = CTxdStore::FindTxdSlot("fluffycloudsSA");
-	CTxdStore::SetCurrentTxd(slot);
+	int32_t fluffycloud = CTxdStore::AddTxdSlot("fluffycloudsSA");
+	CTxdStore::LoadTxd(fluffycloud, "MODELS\\FLUFFYCLOUDSSA.TXD");
+	int32_t slotfluff = CTxdStore::FindTxdSlot("fluffycloudsSA");
+	CTxdStore::SetCurrentTxd(slotfluff);
 	gpCloudTex[0] = RwTextureRead("cloud1", NULL);
 	gpCloudTex[1] = RwTextureRead("cloud2", NULL);
 	gpCloudTex[2] = RwTextureRead("cloud3", NULL);
 	gpCloudTex[3] = RwTextureRead("cloudmasked", NULL);
 	gpCloudTex[4] = RwTextureRead("cloudhilit", NULL);
 	CTxdStore::PopCurrentTxd();
+	//fluffyalpha2 = 160;
 	CloudRotation = 0.0f;
+	//FluffyCloudsInvisible = false;
 }
 
 void
@@ -66,8 +69,17 @@ CClouds::Update(void)
 	float s = sin(TheCamera.m_fOrientation - 0.85f);
 	CloudRotation += CWeather::Wind * s * 0.001f * CTimer::ms_fOldTimeStep;
 	IndividualRotation += (CWeather::Wind * CTimer::ms_fTimeStep * 0.5f + 0.3f * CTimer::ms_fOldTimeStep) * 60.0f;
+	/*if (FluffyCloudsInvisible) {
+		fluffyalpha2 -= 5;
+		if (fluffyalpha2 < 0)
+			fluffyalpha2 = 0;
+	}
+	else {
+		fluffyalpha2 += 5;
+		if (fluffyalpha2 > 160)
+			fluffyalpha = 160;
+	}*/
 }
-
 
 float CoorsOffsetX[37] = {
 	0.0f, 60.0f, 72.0f, 48.0f, 21.0f, 12.0f,
@@ -131,12 +143,12 @@ CClouds::Render(void)
 
 			if (CSprite::CalcScreenCoors(worldpos, &screenpos, &szx, &szy, false, false)) {
 				sundist = sqrt(SQR(screenpos.x - CCoronas::SunScreenX) + SQR(screenpos.y - CCoronas::SunScreenY));
-				int tr = (170, 170, 170);
-				int tg = (170, 170, 170);
-				int tb = (170, 170, 170);
-				int br = (0, 0, 0);
-				int bg = (0, 0, 0);
-				int bb = (0, 0, 0);
+				int tr = ms_colourTop.r = 160;
+				int tg = ms_colourTop.g = 160;
+				int tb = ms_colourTop.b = 160;
+				int br = ms_colourBottom.r = 0;
+				int bg = ms_colourBottom.g = 0;
+				int bb = ms_colourBottom.b = 0;
 
 					int distLimit = (3 * SCREEN_WIDTH) / 4;
 				if (sundist < distLimit) {
@@ -166,9 +178,10 @@ CClouds::Render(void)
 		CSprite2::FlushSpriteBuffer();
 
 		// Highlights
-		RwRenderStateSet(rwRENDERSTATESRCBLEND, (void*)rwBLENDSRCALPHA);
-		RwRenderStateSet(rwRENDERSTATEDESTBLEND, (void*)rwBLENDINVSRCALPHA);
+		RwRenderStateSet(rwRENDERSTATESRCBLEND, (void*)rwBLENDONE);
+		RwRenderStateSet(rwRENDERSTATEDESTBLEND, (void*)rwBLENDONE);
 		RwRenderStateSet(rwRENDERSTATETEXTURERASTER, RwTextureGetRaster(gpCloudTex[4]));
+
 
 		for (i = 0; i < 37; i++) {
 			RwV3d pos = { 2.0f * CoorsOffsetX[i], 2.0f * CoorsOffsetY[i], 40.0f * CoorsOffsetZ[i] + 40.0f };

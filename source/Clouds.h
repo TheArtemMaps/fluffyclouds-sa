@@ -7,6 +7,7 @@ public:
 	static uint32_t IndividualRotation;
 
 	static float ms_cameraRoll;
+	//static bool FluffyCloudsInvisible;
 	static float ms_horizonZ;
 	static float ms_HorizonTilt;
 	static CRGBA ms_colourTop;
