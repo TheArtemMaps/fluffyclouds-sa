@@ -2,10 +2,11 @@
 
 Port of GTA3/GTA VC's fluffy clouds to SA. With highlight effect, and every original feature.
 
-![gallery113](https://github.com/TheArtemMaps/fluffyclouds-sa/assets/91487356/eb524b42-741e-48da-b018-2ee89c37bdad)
-![gallery112](https://github.com/TheArtemMaps/fluffyclouds-sa/assets/91487356/90a0be8f-7b37-4484-9b64-ded14dbc9534)
-![gallery111](https://github.com/TheArtemMaps/fluffyclouds-sa/assets/91487356/6c8d4c9b-3396-490d-abd6-81636d9f62fb)
-![gallery117](https://github.com/TheArtemMaps/fluffyclouds-sa/assets/91487356/212e08d6-ad3e-47c7-a74e-4aecaeece92d)
-![gallery116](https://github.com/TheArtemMaps/fluffyclouds-sa/assets/91487356/bf97f349-888b-49ec-80c2-54dc9c045558)
-![gallery115](https://github.com/TheArtemMaps/fluffyclouds-sa/assets/91487356/dcb5e44a-9f37-43bd-9f18-6784728ec202)
-![gallery114](https://github.com/TheArtemMaps/fluffyclouds-sa/assets/91487356/01dcc865-ce99-4736-9ab0-1ec6bfa23b84)
+
+![gallery122](https://github.com/TheArtemMaps/fluffyclouds-sa/assets/91487356/11a11b56-7a17-482f-ad58-ddb342b62919)
+![gallery121](https://github.com/TheArtemMaps/fluffyclouds-sa/assets/91487356/83fa6397-dc9c-43b4-9be9-44e8829c97ad)
+![gallery120](https://github.com/TheArtemMaps/fluffyclouds-sa/assets/91487356/c4ffd107-0ad2-4d44-873a-660f46cc1bcd)
+![gallery119](https://github.com/TheArtemMaps/fluffyclouds-sa/assets/91487356/eabd1665-f50a-4044-a93e-c736425d0d9e)
+![gallery118](https://github.com/TheArtemMaps/fluffyclouds-sa/assets/91487356/b669d9ed-d4d7-490a-98f7-376e53f4c2c9)
+![gallery124](https://github.com/TheArtemMaps/fluffyclouds-sa/assets/91487356/2e2a27f2-b5d3-48d7-9b91-a720bcc8abc7)
+![gallery123](https://github.com/TheArtemMaps/fluffyclouds-sa/assets/91487356/6f69ef23-e4d9-481e-8416-4ef2a1b788d3)
