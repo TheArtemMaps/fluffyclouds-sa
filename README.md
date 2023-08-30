@@ -10,3 +10,4 @@ Port of GTA3/GTA VC's fluffy clouds to SA. With highlight effect, and every orig
 ![gallery118](https://github.com/TheArtemMaps/fluffyclouds-sa/assets/91487356/b669d9ed-d4d7-490a-98f7-376e53f4c2c9)
 ![gallery124](https://github.com/TheArtemMaps/fluffyclouds-sa/assets/91487356/2e2a27f2-b5d3-48d7-9b91-a720bcc8abc7)
 ![gallery123](https://github.com/TheArtemMaps/fluffyclouds-sa/assets/91487356/6f69ef23-e4d9-481e-8416-4ef2a1b788d3)
+https://cdn.discordapp.com/attachments/1146215394491773030/1146570571371528202/image.png
