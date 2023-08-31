@@ -18,10 +18,10 @@
 #include "CClock.h"
 #include "Sprite2.h"
 #include "CSprite.h"
+#include "CTimeCycle.h"
 
 
 RwTexture* gpCloudTex[5];
-
 CRGBA CClouds::ms_colourTop;
 CRGBA CClouds::ms_colourBottom;
 //bool CClouds::FluffyCloudsInvisible;
@@ -143,14 +143,21 @@ CClouds::Render(void)
 
 			if (CSprite::CalcScreenCoors(worldpos, &screenpos, &szx, &szy, false, false)) {
 				sundist = sqrt(SQR(screenpos.x - CCoronas::SunScreenX) + SQR(screenpos.y - CCoronas::SunScreenY));
-				int tr = ms_colourTop.r = 160;
-				int tg = ms_colourTop.g = 160;
-				int tb = ms_colourTop.b = 160;
+				int tr = CTimeCycle::GetAmbientRed();
+				int tg = CTimeCycle::GetAmbientGreen();
+				int tb = CTimeCycle::GetAmbientBlue();
+				int br = ms_colourBottom.r = 180;
+				int bg = ms_colourBottom.g = 180;
+				int bb = ms_colourBottom.b = 180;
+
+				/*int tr = ms_colourTop.r = 190;
+				int tg = ms_colourTop.g = 190;
+				int tb = ms_colourTop.b = 190;
 				int br = ms_colourBottom.r = 0;
 				int bg = ms_colourBottom.g = 0;
-				int bb = ms_colourBottom.b = 0;
+				int bb = ms_colourBottom.b = 0; //old rgb method*/
 
-					int distLimit = (3 * SCREEN_WIDTH) / 4;
+				int distLimit = (3 * SCREEN_WIDTH) / 4;
 				if (sundist < distLimit) {
 					hilight = (1.0f - max(CWeather::Foggyness, CWeather::CloudCoverage)) * (1.0f - sundist / (float)distLimit);
 					tr = tr * (1.0f - hilight) + 255 * hilight;
@@ -181,7 +188,6 @@ CClouds::Render(void)
 		RwRenderStateSet(rwRENDERSTATESRCBLEND, (void*)rwBLENDONE);
 		RwRenderStateSet(rwRENDERSTATEDESTBLEND, (void*)rwBLENDONE);
 		RwRenderStateSet(rwRENDERSTATETEXTURERASTER, RwTextureGetRaster(gpCloudTex[4]));
-
 
 		for (i = 0; i < 37; i++) {
 			RwV3d pos = { 2.0f * CoorsOffsetX[i], 2.0f * CoorsOffsetY[i], 40.0f * CoorsOffsetZ[i] + 40.0f };
