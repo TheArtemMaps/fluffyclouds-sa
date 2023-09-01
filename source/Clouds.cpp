@@ -19,16 +19,19 @@
 #include "Sprite2.h"
 #include "CSprite.h"
 #include "CTimeCycle.h"
+#include "Patch.h"
+using namespace plugin;
 
 
 RwTexture* gpCloudTex[5];
-CRGBA CClouds::ms_colourTop;
-CRGBA CClouds::ms_colourBottom;
+RwRGBA CClouds::ms_colourTop;
+RwRGBA CClouds::ms_colourBottom;
 //bool CClouds::FluffyCloudsInvisible;
 //int32_t fluffyalpha2 = 160 * (1.0f - max(CWeather::Foggyness, CWeather::ExtraSunnyness));
 float CClouds::ms_cameraRoll;
 float CClouds::CloudRotation;
 uint32_t CClouds::IndividualRotation;
+
 void
 CClouds::Init(void)
 {
@@ -67,8 +70,8 @@ void
 CClouds::Update(void)
 {
 	float s = sin(TheCamera.m_fOrientation - 0.85f);
-	CloudRotation += CWeather::Wind * s * 0.001f * CTimer::ms_fOldTimeStep;
-	IndividualRotation += (CWeather::Wind * CTimer::ms_fTimeStep * 0.5f + 0.3f * CTimer::ms_fOldTimeStep) * 60.0f;
+	CloudRotation += CWeather::Wind * s * 0.001f * CTimer::ms_fTimeStep;
+	IndividualRotation += (CWeather::Wind * CTimer::ms_fTimeStep * 0.5f + 0.3f * CTimer::ms_fTimeStep) * 60.0f;
 	/*if (FluffyCloudsInvisible) {
 		fluffyalpha2 -= 5;
 		if (fluffyalpha2 < 0)
@@ -111,6 +114,11 @@ uint8_t BowGreen[6] = { 0, 15, 30, 30, 0, 0 };
 uint8_t BowBlue[6] = { 0, 0, 0, 10, 30, 30 };
 
 
+float LowCloudsX[12] = { 1.0f, 0.7f, 0.0f, -0.7f, -1.0f, -0.7f, 0.0f, 0.7f, 0.8f, -0.8f, 0.4f, -0.4f };
+float LowCloudsY[12] = { 0.0f, -0.7f, -1.0f, -0.7f, 0.0f, 0.7f, 1.0f, 0.7f, 0.4f, 0.4f, -0.8f, -0.8f };
+float LowCloudsZ[12] = { 0.0f, 1.0f, 0.5f, 0.0f, 1.0f, 0.3f, 0.9f, 0.4f, 1.3f, 1.4f, 1.2f, 1.7f };
+
+
 void
 CClouds::Render(void)
 {
@@ -143,12 +151,13 @@ CClouds::Render(void)
 
 			if (CSprite::CalcScreenCoors(worldpos, &screenpos, &szx, &szy, false, false)) {
 				sundist = sqrt(SQR(screenpos.x - CCoronas::SunScreenX) + SQR(screenpos.y - CCoronas::SunScreenY));
-				int tr = CTimeCycle::GetAmbientRed();
-				int tg = CTimeCycle::GetAmbientGreen();
-				int tb = CTimeCycle::GetAmbientBlue();
-				int br = ms_colourBottom.r = 180;
-				int bg = ms_colourBottom.g = 180;
-				int bb = ms_colourBottom.b = 180;
+				//i will use current volumetric clouds color
+				int tr = CTimeCycle::m_CurrentColours.m_nFluffyCloudsBottomRed;
+				int tg = CTimeCycle::m_CurrentColours.m_nFluffyCloudsBottomGreen;
+				int tb = CTimeCycle::m_CurrentColours.m_nFluffyCloudsBottomBlue;
+				int br = CTimeCycle::m_CurrentColours.m_nFluffyCloudsBottomRed;
+				int bg = CTimeCycle::m_CurrentColours.m_nFluffyCloudsBottomGreen;
+				int bb = CTimeCycle::m_CurrentColours.m_nFluffyCloudsBottomBlue;
 
 				/*int tr = ms_colourTop.r = 190;
 				int tg = ms_colourTop.g = 190;

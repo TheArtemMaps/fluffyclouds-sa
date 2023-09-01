@@ -10,12 +10,12 @@ public:
 	//static bool FluffyCloudsInvisible;
 	static float ms_horizonZ;
 	static float ms_HorizonTilt;
-	static CRGBA ms_colourTop;
-	static CRGBA ms_colourBottom;
-	static CRGBA ms_colourBkGrd;
-
+	static RwRGBA ms_colourTop;
+	static RwRGBA ms_colourBottom;
+	static RwRGBA ms_colourBkGrd;
 	static void Init(void);
 	static void Shutdown(void);
 	static void Update(void);
 	static void Render(void);
 };
+
