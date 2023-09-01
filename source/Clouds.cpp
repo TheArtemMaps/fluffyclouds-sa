@@ -109,15 +109,6 @@ float CoorsOffsetZ[37] = {
 	2.0f, 2.0f, 1.5f, 1.2f, 1.7f, 1.5f, 2.1f
 };
 
-uint8_t BowRed[6] = { 30, 30, 30, 10, 0, 15 };
-uint8_t BowGreen[6] = { 0, 15, 30, 30, 0, 0 };
-uint8_t BowBlue[6] = { 0, 0, 0, 10, 30, 30 };
-
-
-float LowCloudsX[12] = { 1.0f, 0.7f, 0.0f, -0.7f, -1.0f, -0.7f, 0.0f, 0.7f, 0.8f, -0.8f, 0.4f, -0.4f };
-float LowCloudsY[12] = { 0.0f, -0.7f, -1.0f, -0.7f, 0.0f, 0.7f, 1.0f, 0.7f, 0.4f, 0.4f, -0.8f, -0.8f };
-float LowCloudsZ[12] = { 0.0f, 1.0f, 0.5f, 0.0f, 1.0f, 0.3f, 0.9f, 0.4f, 1.3f, 1.4f, 1.2f, 1.7f };
-
 
 void
 CClouds::Render(void)
@@ -152,9 +143,9 @@ CClouds::Render(void)
 			if (CSprite::CalcScreenCoors(worldpos, &screenpos, &szx, &szy, false, false)) {
 				sundist = sqrt(SQR(screenpos.x - CCoronas::SunScreenX) + SQR(screenpos.y - CCoronas::SunScreenY));
 				//i will use current volumetric clouds color
-				int tr = CTimeCycle::m_CurrentColours.m_nFluffyCloudsBottomRed;
-				int tg = CTimeCycle::m_CurrentColours.m_nFluffyCloudsBottomGreen;
-				int tb = CTimeCycle::m_CurrentColours.m_nFluffyCloudsBottomBlue;
+				int tr = NULL;
+				int tg = NULL;
+				int tb = NULL;
 				int br = CTimeCycle::m_CurrentColours.m_nFluffyCloudsBottomRed;
 				int bg = CTimeCycle::m_CurrentColours.m_nFluffyCloudsBottomGreen;
 				int bb = CTimeCycle::m_CurrentColours.m_nFluffyCloudsBottomBlue;
@@ -170,11 +161,11 @@ CClouds::Render(void)
 				if (sundist < distLimit) {
 					hilight = (1.0f - max(CWeather::Foggyness, CWeather::CloudCoverage)) * (1.0f - sundist / (float)distLimit);
 					tr = tr * (1.0f - hilight) + 255 * hilight;
-					tg = tg * (1.0f - hilight) + 190 * hilight;
-					tb = tb * (1.0f - hilight) + 190 * hilight;
+					tg = tg * (1.0f - hilight) + 150 * hilight;
+					tb = tb * (1.0f - hilight) + 150 * hilight;
 					br = br * (1.0f - hilight) + 255 * hilight;
-					bg = bg * (1.0f - hilight) + 190 * hilight;
-					bb = bb * (1.0f - hilight) + 190 * hilight;
+					bg = bg * (1.0f - hilight) + 150 * hilight;
+					bb = bb * (1.0f - hilight) + 150 * hilight;
 					if (sundist < SCREEN_WIDTH / 10)
 						CCoronas::SunBlockedByClouds = true;
 				}
