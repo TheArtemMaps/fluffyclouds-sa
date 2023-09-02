@@ -4,9 +4,6 @@
 #include "Sprite2.h"
 #include "CScene.h"
 
-#ifdef ASPECT_RATIO_SCALE
-#include "Frontend.h"
-#endif
 using namespace std;
 
 float CSprite2::m_f2DNearScreenZ;

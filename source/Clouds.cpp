@@ -149,7 +149,6 @@ CClouds::Render(void)
 				int br = CTimeCycle::m_CurrentColours.m_nFluffyCloudsBottomRed;
 				int bg = CTimeCycle::m_CurrentColours.m_nFluffyCloudsBottomGreen;
 				int bb = CTimeCycle::m_CurrentColours.m_nFluffyCloudsBottomBlue;
-
 				/*int tr = ms_colourTop.r = 190;
 				int tg = ms_colourTop.g = 190;
 				int tb = ms_colourTop.b = 190;
