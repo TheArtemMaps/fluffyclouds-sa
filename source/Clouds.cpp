@@ -22,12 +22,11 @@
 #include "Patch.h"
 using namespace plugin;
 
-
+//int fluffyalpha2 = 160 * (1.0f - max(CWeather::Foggyness, CWeather::ExtraSunnyness));
 RwTexture* gpCloudTex[5];
 RwRGBA CClouds::ms_colourTop;
 RwRGBA CClouds::ms_colourBottom;
 //bool CClouds::FluffyCloudsInvisible;
-//int32_t fluffyalpha2 = 160 * (1.0f - max(CWeather::Foggyness, CWeather::ExtraSunnyness));
 float CClouds::ms_cameraRoll;
 float CClouds::CloudRotation;
 uint32_t CClouds::IndividualRotation;
@@ -80,7 +79,7 @@ CClouds::Update(void)
 	else {
 		fluffyalpha2 += 5;
 		if (fluffyalpha2 > 160)
-			fluffyalpha = 160;
+			fluffyalpha2 = 160;
 	}*/
 }
 
@@ -117,6 +116,9 @@ CClouds::Render(void)
 	//fluffy clouds
 	if (!CGame::CanSeeOutSideFromCurrArea())
 		return;
+
+	/*if (fluffyalpha2 == 0)
+		return;*/
 
 	CCoronas::SunBlockedByClouds = false;
 	int i;
