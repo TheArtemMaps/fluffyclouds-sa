@@ -5,7 +5,6 @@
 #include "CWeather.h"
 #include "CCamera.h"
 #include "CWorld.h"
-#include "CVehicle.h"
 #include "CTxdStore.h"
 #include "CVector.h"
 
@@ -20,6 +19,8 @@
 #include "CSprite.h"
 #include "CTimeCycle.h"
 #include "Patch.h"
+#define NO_FLUFF_AT_HEIGHTS
+#define FLUFF_Z_OFFSET 50.0f // 40.0f
 using namespace plugin;
 
 //int fluffyalpha2 = 160 * (1.0f - max(CWeather::Foggyness, CWeather::ExtraSunnyness));
@@ -64,6 +65,8 @@ CClouds::Shutdown(void)
 	RwTextureDestroy(gpCloudTex[4]);
 	gpCloudTex[4] = NULL;
 }
+
+
 
 void
 CClouds::Update(void)
@@ -130,6 +133,12 @@ CClouds::Render(void)
 	float rot_sin = sin(CloudRotation);
 	float rot_cos = cos(CloudRotation);
 	int fluffyalpha = 160 * (1.0f - max(CWeather::Foggyness, CWeather::ExtraSunnyness));
+#ifdef NO_FLUFF_AT_HEIGHTS
+	if (campos.z > FLUFF_Z_OFFSET)
+	{
+		fluffyalpha -= (campos.z - FLUFF_Z_OFFSET) * ((float)(255 - (unsigned char)fluffyalpha) / 255.0f);
+	}
+#endif
 	if (fluffyalpha != 0) {
 		static bool bCloudOnScreen[37];
 		float sundist, hilight;
@@ -137,7 +146,7 @@ CClouds::Render(void)
 		RwRenderStateSet(rwRENDERSTATEDESTBLEND, (void*)rwBLENDINVSRCALPHA);
 		RwRenderStateSet(rwRENDERSTATETEXTURERASTER, RwTextureGetRaster(gpCloudTex[3]));
 		for (i = 0; i < 37; i++) {
-			RwV3d pos = { 2.0f * CoorsOffsetX[i], 2.0f * CoorsOffsetY[i], 40.0f * CoorsOffsetZ[i] + 40.0f };
+			RwV3d pos = { 2.0f * CoorsOffsetX[i], 2.0f * CoorsOffsetY[i], 40.0f * CoorsOffsetZ[i] + 40.0f + FLUFF_Z_OFFSET };
 			worldpos.x = pos.x * rot_cos + pos.y * rot_sin + campos.x;
 			worldpos.y = pos.x * rot_sin - pos.y * rot_cos + campos.y;
 			worldpos.z = pos.z;
@@ -161,12 +170,12 @@ CClouds::Render(void)
 				int distLimit = (3 * SCREEN_WIDTH) / 4;
 				if (sundist < distLimit) {
 					hilight = (1.0f - max(CWeather::Foggyness, CWeather::CloudCoverage)) * (1.0f - sundist / (float)distLimit);
-					tr = tr * (1.0f - hilight) + 255 * hilight;
-					tg = tg * (1.0f - hilight) + 150 * hilight;
-					tb = tb * (1.0f - hilight) + 150 * hilight;
-					br = br * (1.0f - hilight) + 255 * hilight;
-					bg = bg * (1.0f - hilight) + 150 * hilight;
-					bb = bb * (1.0f - hilight) + 150 * hilight;
+				tr = tr*(1.0f-hilight) + 255*hilight;
+				tg = tg*(1.0f-hilight) + 150 *hilight;
+				tb = tb*(1.0f-hilight) + 150 *hilight;
+				br = br*(1.0f-hilight) + 255*hilight;
+				bg = bg*(1.0f-hilight) + 150*hilight;
+				bb = bb*(1.0f-hilight) + 150 *hilight;
 					if (sundist < SCREEN_WIDTH / 10)
 						CCoronas::SunBlockedByClouds = true;
 				}
@@ -191,7 +200,7 @@ CClouds::Render(void)
 		RwRenderStateSet(rwRENDERSTATETEXTURERASTER, RwTextureGetRaster(gpCloudTex[4]));
 
 		for (i = 0; i < 37; i++) {
-			RwV3d pos = { 2.0f * CoorsOffsetX[i], 2.0f * CoorsOffsetY[i], 40.0f * CoorsOffsetZ[i] + 40.0f };
+			RwV3d pos = { 2.0f * CoorsOffsetX[i], 2.0f * CoorsOffsetY[i], 40.0f * CoorsOffsetZ[i] + 40.0f + FLUFF_Z_OFFSET };
 			worldpos.x = pos.x * rot_cos + pos.y * rot_sin + campos.x;
 			worldpos.y = pos.x * rot_sin + pos.y * rot_cos + campos.y;
 			worldpos.z = pos.z;
@@ -207,4 +216,3 @@ CClouds::Render(void)
 		CSprite2::FlushSpriteBuffer();
 	}
 }
-

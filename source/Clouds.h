@@ -18,4 +18,3 @@ public:
 	static void Update(void);
 	static void Render(void);
 };
-
