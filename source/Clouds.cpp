@@ -5,7 +5,6 @@
 #include "CWeather.h"
 #include "CCamera.h"
 #include "CWorld.h"
-#include "CVehicle.h"
 #include "CTxdStore.h"
 #include "CVector.h"
 
@@ -19,9 +18,12 @@
 #include "Sprite2.h"
 #include "CSprite.h"
 #include "CTimeCycle.h"
-#include "Patch.h"
-using namespace plugin;
+//#define NO_FLUFF_AT_HEIGHTS
+#define FLUFF_Z_OFFSET 50.0f // 40.0f
+#define FLUFF_ALPHA 160 // Fluffy clouds alpha level
 
+using namespace plugin;
+inline float sq(float x) { return x * x; }
 //int fluffyalpha2 = 160 * (1.0f - max(CWeather::Foggyness, CWeather::ExtraSunnyness));
 RwTexture* gpCloudTex[5];
 RwRGBA CClouds::ms_colourTop;
@@ -39,9 +41,6 @@ CClouds::Init(void)
 	CTxdStore::LoadTxd(fluffycloud, "MODELS\\FLUFFYCLOUDSSA.TXD");
 	int32_t slotfluff = CTxdStore::FindTxdSlot("fluffycloudsSA");
 	CTxdStore::SetCurrentTxd(slotfluff);
-	gpCloudTex[0] = RwTextureRead("cloud1", NULL);
-	gpCloudTex[1] = RwTextureRead("cloud2", NULL);
-	gpCloudTex[2] = RwTextureRead("cloud3", NULL);
 	gpCloudTex[3] = RwTextureRead("cloudmasked", NULL);
 	gpCloudTex[4] = RwTextureRead("cloudhilit", NULL);
 	CTxdStore::PopCurrentTxd();
@@ -53,24 +52,20 @@ CClouds::Init(void)
 void
 CClouds::Shutdown(void)
 {
-	RwTextureDestroy(gpCloudTex[0]);
-	gpCloudTex[0] = NULL;
-	RwTextureDestroy(gpCloudTex[1]);
-	gpCloudTex[1] = NULL;
-	RwTextureDestroy(gpCloudTex[2]);
-	gpCloudTex[2] = NULL;
 	RwTextureDestroy(gpCloudTex[3]);
 	gpCloudTex[3] = NULL;
 	RwTextureDestroy(gpCloudTex[4]);
 	gpCloudTex[4] = NULL;
 }
 
+
+
 void
 CClouds::Update(void)
 {
 	float s = sin(TheCamera.m_fOrientation - 0.85f);
-	CloudRotation += CWeather::Wind * s * 0.001f * CTimer::ms_fTimeStep;
-	IndividualRotation += (CWeather::Wind * CTimer::ms_fTimeStep * 0.5f + 0.3f * CTimer::ms_fTimeStep) * 60.0f;
+	CloudRotation += CWeather::Wind * s * 0.001f * CClouds::GetTimeStepFix();
+	IndividualRotation += (CWeather::Wind * CTimer::ms_fTimeStep * 0.5f + 0.3f * CClouds::GetTimeStepFix()) * 60.0f;
 	/*if (FluffyCloudsInvisible) {
 		fluffyalpha2 -= 5;
 		if (fluffyalpha2 < 0)
@@ -129,7 +124,13 @@ CClouds::Render(void)
 	CVector campos = TheCamera.GetPosition();
 	float rot_sin = sin(CloudRotation);
 	float rot_cos = cos(CloudRotation);
-	int fluffyalpha = 160 * (1.0f - max(CWeather::Foggyness, CWeather::ExtraSunnyness));
+	int fluffyalpha = FLUFF_ALPHA * (1.0f - max(CWeather::Foggyness, CWeather::ExtraSunnyness));
+#ifdef NO_FLUFF_AT_HEIGHTS // Comment out "#define NO_FLUFF_AT_HEIGHTS" to not have this feature or remove comment to have this
+	if (campos.z > FLUFF_Z_OFFSET)
+	{
+		fluffyalpha -= (campos.z - FLUFF_Z_OFFSET) * ((float)(255 - (unsigned char)FLUFF_ALPHA) / 255.0f);
+	}
+#endif
 	if (fluffyalpha != 0) {
 		static bool bCloudOnScreen[37];
 		float sundist, hilight;
@@ -137,17 +138,17 @@ CClouds::Render(void)
 		RwRenderStateSet(rwRENDERSTATEDESTBLEND, (void*)rwBLENDINVSRCALPHA);
 		RwRenderStateSet(rwRENDERSTATETEXTURERASTER, RwTextureGetRaster(gpCloudTex[3]));
 		for (i = 0; i < 37; i++) {
-			RwV3d pos = { 2.0f * CoorsOffsetX[i], 2.0f * CoorsOffsetY[i], 40.0f * CoorsOffsetZ[i] + 40.0f };
+			RwV3d pos = { 2.0f * CoorsOffsetX[i], 2.0f * CoorsOffsetY[i], 40.0f * CoorsOffsetZ[i] + FLUFF_Z_OFFSET };
 			worldpos.x = pos.x * rot_cos + pos.y * rot_sin + campos.x;
 			worldpos.y = pos.x * rot_sin - pos.y * rot_cos + campos.y;
 			worldpos.z = pos.z;
 
 			if (CSprite::CalcScreenCoors(worldpos, &screenpos, &szx, &szy, false, false)) {
-				sundist = sqrt(SQR(screenpos.x - CCoronas::SunScreenX) + SQR(screenpos.y - CCoronas::SunScreenY));
+				sundist = sqrt(sq(screenpos.x - CCoronas::SunScreenX) + sq(screenpos.y - CCoronas::SunScreenY));
 				//i will use current volumetric clouds color
-				int tr = NULL;
-				int tg = NULL;
-				int tb = NULL;
+				int tr = CTimeCycle::m_CurrentColours.m_nFluffyCloudsBottomRed * 0.85f;
+				int tg = CTimeCycle::m_CurrentColours.m_nFluffyCloudsBottomGreen * 0.85f;
+				int tb = CTimeCycle::m_CurrentColours.m_nFluffyCloudsBottomBlue * 0.85f;
 				int br = CTimeCycle::m_CurrentColours.m_nFluffyCloudsBottomRed;
 				int bg = CTimeCycle::m_CurrentColours.m_nFluffyCloudsBottomGreen;
 				int bb = CTimeCycle::m_CurrentColours.m_nFluffyCloudsBottomBlue;
@@ -184,19 +185,19 @@ CClouds::Render(void)
 				bCloudOnScreen[i] = false;
 		}
 		CSprite2::FlushSpriteBuffer();
-
 		// Highlights
 		RwRenderStateSet(rwRENDERSTATESRCBLEND, (void*)rwBLENDONE);
 		RwRenderStateSet(rwRENDERSTATEDESTBLEND, (void*)rwBLENDONE);
 		RwRenderStateSet(rwRENDERSTATETEXTURERASTER, RwTextureGetRaster(gpCloudTex[4]));
 
 		for (i = 0; i < 37; i++) {
-			RwV3d pos = { 2.0f * CoorsOffsetX[i], 2.0f * CoorsOffsetY[i], 40.0f * CoorsOffsetZ[i] + 40.0f };
+			RwV3d pos = { 2.0f * CoorsOffsetX[i], 2.0f * CoorsOffsetY[i], 40.0f * CoorsOffsetZ[i] + FLUFF_Z_OFFSET };
 			worldpos.x = pos.x * rot_cos + pos.y * rot_sin + campos.x;
-			worldpos.y = pos.x * rot_sin + pos.y * rot_cos + campos.y;
+			worldpos.y = pos.x * rot_sin - pos.y * rot_cos + campos.y;
 			worldpos.z = pos.z;
 			if (bCloudOnScreen[i] && CSprite::CalcScreenCoors(worldpos, &screenpos, &szx, &szy, false, false)) {
-				if (sundist < SCREEN_WIDTH / 3) {
+				// BUG: this is stupid....would have to do this for each cloud individually
+				if (hilight > 0.0f) {
 					CSprite2::RenderBufferedOneXLUSprite_Rotate_Aspect(screenpos.x, screenpos.y, screenpos.z,
 						szx * 30.0f, szy * 30.0f,
 						200 * hilight, 0, 0, 255, 1.0f / screenpos.z,
@@ -207,4 +208,3 @@ CClouds::Render(void)
 		CSprite2::FlushSpriteBuffer();
 	}
 }
-

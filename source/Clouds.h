@@ -1,5 +1,5 @@
 #pragma once
-
+#include "CTimer.h"
 class CClouds
 {
 public:
@@ -17,5 +17,6 @@ public:
 	static void Shutdown(void);
 	static void Update(void);
 	static void Render(void);
+	static float GetDefaultTimeStep(void) { return 50.0f / 30.0f; }
+	static float GetTimeStepFix(void) { return CTimer::ms_fTimeStep / GetDefaultTimeStep(); }
 };
-
