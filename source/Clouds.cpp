@@ -130,7 +130,7 @@ CClouds::Render(void)
 	{
 		fluffyalpha -= (campos.z - FLUFF_Z_OFFSET) * ((float)(255 - (unsigned char)FLUFF_ALPHA) / 255.0f);
 	}
-#endif
+#endif	
 	if (fluffyalpha != 0) {
 		static bool bCloudOnScreen[37];
 		float sundist, hilight;
@@ -162,12 +162,12 @@ CClouds::Render(void)
 				int distLimit = (3 * SCREEN_WIDTH) / 4;
 				if (sundist < distLimit) {
 					hilight = (1.0f - max(CWeather::Foggyness, CWeather::CloudCoverage)) * (1.0f - sundist / (float)distLimit);
-					tr = tr * (1.0f - hilight) + 255 * hilight;
-					tg = tg * (1.0f - hilight) + 150 * hilight;
-					tb = tb * (1.0f - hilight) + 150 * hilight;
-					br = br * (1.0f - hilight) + 255 * hilight;
-					bg = bg * (1.0f - hilight) + 150 * hilight;
-					bb = bb * (1.0f - hilight) + 150 * hilight;
+				tr = tr*(1.0f-hilight) + 255*hilight;
+				tg = tg*(1.0f-hilight) + 150 *hilight;
+				tb = tb*(1.0f-hilight) + 150 *hilight;
+				br = br*(1.0f-hilight) + 255*hilight;
+				bg = bg*(1.0f-hilight) + 150*hilight;
+				bb = bb*(1.0f-hilight) + 150 *hilight;
 					if (sundist < SCREEN_WIDTH / 10)
 						CCoronas::SunBlockedByClouds = true;
 				}
