@@ -15,18 +15,22 @@ int32_t CSprite2::m_bFlushSpriteBufferSwitchZTest;
 static int32_t nSpriteBufferIndex;
 static RwIm2DVertex SpriteBufferVerts[SPRITEBUFFERSIZE*6];
 static RwIm2DVertex verts[4];
+#define RwIm2DGetNearScreenZMacro() (RWSRCGLOBAL(dOpenDevice).zBufferNear)
+#define RwIm2DGetNearScreenZ() RwIm2DGetNearScreenZMacro()
+#define RwIm2DGetFarScreenZMacro() (RWSRCGLOBAL(dOpenDevice).zBufferFar)
+#define RwIm2DGetFarScreenZ() RwIm2DGetFarScreenZMacro()
 
 void
 CSprite2::InitSpriteBuffer(void)
 {
-	m_f2DNearScreenZ = CDraw::ms_fNearClipZ;
-	m_f2DFarScreenZ = CDraw::ms_fFarClipZ;
+	m_f2DNearScreenZ = RwIm2DGetNearScreenZ();
+	m_f2DFarScreenZ = RwIm2DGetFarScreenZ();
 }
 
 void
 CSprite2::FlushSpriteBuffer(void)
 {
-	if(nSpriteBufferIndex > 0){
+	if (nSpriteBufferIndex > 0) {
 		if(m_bFlushSpriteBufferSwitchZTest){
 			RwRenderStateSet(rwRENDERSTATEZTESTENABLE, (void*)FALSE);
 			RwIm2DRenderPrimitive(rwPRIMTYPETRILIST, SpriteBufferVerts, nSpriteBufferIndex*6);

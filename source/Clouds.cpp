@@ -18,8 +18,8 @@
 #include "Sprite2.h"
 #include "CSprite.h"
 #include "CTimeCycle.h"
-//#define NO_FLUFF_AT_HEIGHTS
-#define FLUFF_Z_OFFSET 50.0f // 40.0f
+#define NO_FLUFF_AT_HEIGHTS
+#define FLUFF_Z_OFFSET 55.0f // 40.0f
 #define FLUFF_ALPHA 160 // Fluffy clouds alpha level
 
 using namespace plugin;
@@ -31,7 +31,12 @@ RwRGBA CClouds::ms_colourBottom;
 //bool CClouds::FluffyCloudsInvisible;
 float CClouds::ms_cameraRoll;
 float CClouds::CloudRotation;
+float CloudHighlight[37];
+float CloudToSunDistance[37];
 uint32_t CClouds::IndividualRotation;
+
+
+
 
 void
 CClouds::Init(void)
@@ -107,6 +112,8 @@ float CoorsOffsetZ[37] = {
 void
 CClouds::Render(void)
 {
+	int fluffyalpha = FLUFF_ALPHA * (1.0f - max(CWeather::Foggyness, CWeather::ExtraSunnyness));
+	if (fluffyalpha > 255) fluffyalpha = 255;
 	CSprite2::InitSpriteBuffer();
 	//fluffy clouds
 	if (!CGame::CanSeeOutSideFromCurrArea())
@@ -124,7 +131,7 @@ CClouds::Render(void)
 	CVector campos = TheCamera.GetPosition();
 	float rot_sin = sin(CloudRotation);
 	float rot_cos = cos(CloudRotation);
-	int fluffyalpha = FLUFF_ALPHA * (1.0f - max(CWeather::Foggyness, CWeather::ExtraSunnyness));
+
 #ifdef NO_FLUFF_AT_HEIGHTS // Comment out "#define NO_FLUFF_AT_HEIGHTS" to not have this feature or remove comment to have this
 	if (campos.z > FLUFF_Z_OFFSET)
 	{
@@ -146,12 +153,12 @@ CClouds::Render(void)
 			if (CSprite::CalcScreenCoors(worldpos, &screenpos, &szx, &szy, false, false)) {
 				sundist = sqrt(sq(screenpos.x - CCoronas::SunScreenX) + sq(screenpos.y - CCoronas::SunScreenY));
 				//i will use current volumetric clouds color
-				int tr = CTimeCycle::m_CurrentColours.m_nFluffyCloudsBottomRed * 0.85f;
-				int tg = CTimeCycle::m_CurrentColours.m_nFluffyCloudsBottomGreen * 0.85f;
-				int tb = CTimeCycle::m_CurrentColours.m_nFluffyCloudsBottomBlue * 0.85f;
-				int br = CTimeCycle::m_CurrentColours.m_nFluffyCloudsBottomRed;
-				int bg = CTimeCycle::m_CurrentColours.m_nFluffyCloudsBottomGreen;
-				int bb = CTimeCycle::m_CurrentColours.m_nFluffyCloudsBottomBlue;
+				int tr = CTimeCycle::m_CurrentColours.m_nFluffyCloudsBottomRed;
+				int tg = CTimeCycle::m_CurrentColours.m_nFluffyCloudsBottomGreen;
+				int tb = CTimeCycle::m_CurrentColours.m_nFluffyCloudsBottomBlue;
+				int br = (int)(CTimeCycle::m_CurrentColours.m_nFluffyCloudsBottomRed * 0.85f);
+				int bg = (int)(CTimeCycle::m_CurrentColours.m_nFluffyCloudsBottomGreen * 0.85f);
+				int bb = (int)(CTimeCycle::m_CurrentColours.m_nFluffyCloudsBottomBlue * 0.85f);
 				/*int tr = ms_colourTop.r = 190;
 				int tg = ms_colourTop.g = 190;
 				int tb = ms_colourTop.b = 190;
@@ -159,30 +166,35 @@ CClouds::Render(void)
 				int bg = ms_colourBottom.g = 0;
 				int bb = ms_colourBottom.b = 0; //old rgb method*/
 
-				int distLimit = (3 * SCREEN_WIDTH) / 4;
+				int distLimit = (3.0f * (float)(SCREEN_WIDTH)) / 4.0f;
+				float sundistBlocked = (float)(SCREEN_WIDTH) / 10.0f;
+				float sundistHilit = (float)(SCREEN_WIDTH) / 3.0;
 				if (sundist < distLimit) {
 					hilight = (1.0f - max(CWeather::Foggyness, CWeather::CloudCoverage)) * (1.0f - sundist / (float)distLimit);
-				tr = tr*(1.0f-hilight) + 255*hilight;
-				tg = tg*(1.0f-hilight) + 150 *hilight;
-				tb = tb*(1.0f-hilight) + 150 *hilight;
-				br = br*(1.0f-hilight) + 255*hilight;
-				bg = bg*(1.0f-hilight) + 150*hilight;
-				bb = bb*(1.0f-hilight) + 150 *hilight;
-					if (sundist < SCREEN_WIDTH / 10)
-						CCoronas::SunBlockedByClouds = true;
+					tr = tr * (1.0f - hilight) + 255 * hilight;
+					tg = tg * (1.0f - hilight) + 150 * hilight;
+					tb = tb * (1.0f - hilight) + 150 * hilight;
+					br = br * (1.0f - hilight) + 255 * hilight;
+					bg = bg * (1.0f - hilight) + 150 * hilight;
+					bb = bb * (1.0f - hilight) + 150 * hilight;
+					CloudHighlight[i] = hilight;
+					if (sundist < sundistBlocked) CCoronas::SunBlockedByClouds = (fluffyalpha > (FLUFF_ALPHA / 2));
+					//CCoronas::SunBlockedByClouds = true;
 				}
 				else
-					hilight = 0.0f;
-				CSprite2::RenderBufferedOneXLUSprite_Rotate_2Colours(screenpos.x, screenpos.y, screenpos.z,
-					szx * 55.0f, szy * 55.0f,
-					tr, tg, tb, br, bg, bb, 0.0f, -1.0f,
-					1.0f / screenpos.z,
-					(uint16_t)IndividualRotation / 65336.0f * 6.28f + ms_cameraRoll,
-					fluffyalpha);
+				{
+					//hilight = 0.0f;
+					CloudHighlight[i] = 0.0f;
+				}
+				CloudToSunDistance[i] = sundist;
 				bCloudOnScreen[i] = true;
+				CSprite2::RenderBufferedOneXLUSprite_Rotate_2Colours(screenpos.x, screenpos.y, screenpos.z, szx * 55.0f, szy * 55.0f, tr, tg, tb, br, bg, bb, 0.0f, -1.0f,
+					1.0f / screenpos.z, (uint16_t)IndividualRotation / 65336.0f * 6.28f + ms_cameraRoll, fluffyalpha);
 			}
 			else
+			{
 				bCloudOnScreen[i] = false;
+			}
 		}
 		CSprite2::FlushSpriteBuffer();
 		// Highlights
@@ -197,14 +209,20 @@ CClouds::Render(void)
 			worldpos.z = pos.z;
 			if (bCloudOnScreen[i] && CSprite::CalcScreenCoors(worldpos, &screenpos, &szx, &szy, false, false)) {
 				// BUG: this is stupid....would have to do this for each cloud individually
-				if (hilight > 0.0f) {
+				if (CloudHighlight[i] > 0) {
 					CSprite2::RenderBufferedOneXLUSprite_Rotate_Aspect(screenpos.x, screenpos.y, screenpos.z,
 						szx * 30.0f, szy * 30.0f,
-						200 * hilight, 0, 0, 255, 1.0f / screenpos.z,
+						200 * CloudHighlight[i], 0, 0, 255, 1.0f / screenpos.z,
 						1.7f - CGeneral::GetATanOfXY(screenpos.x - CCoronas::SunScreenX, screenpos.y - CCoronas::SunScreenY) + CClouds::ms_cameraRoll, 255);
 				}
 			}
 		}
 		CSprite2::FlushSpriteBuffer();
+
+		RwRenderStateSet(rwRENDERSTATEVERTEXALPHAENABLE, (void*)0);
+		RwRenderStateSet(rwRENDERSTATEZWRITEENABLE, (void*)1);
+		RwRenderStateSet(rwRENDERSTATEZTESTENABLE, (void*)1);
+		RwRenderStateSet(rwRENDERSTATESRCBLEND, (void*)rwBLENDSRCALPHA);
+		RwRenderStateSet(rwRENDERSTATEDESTBLEND, (void*)rwBLENDINVSRCALPHA);
 	}
 }
