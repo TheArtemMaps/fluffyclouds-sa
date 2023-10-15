@@ -1,6 +1,11 @@
-## Fluffy clouds
 
-Port of GTA3/GTA VC's fluffy clouds to SA. With highlight effect, and every original feature. Ported using re3
+##Fluffy Clouds mod for GTA SA
+Created by TheArtemMaps (me) thanks to RE3 team for source code of GTA VC and GTA 3. It wouldn't be possible, if it wasn't for them.
+This mod adds big clouds from previous GTA games like GTA VC/III.
+They react to wind, weather, and use BottomCloudRGB color from timecyc, which means you can color them.
+Folder "GTA VC/III TIMECYC" contains timecyc_24h.dat files with settings from previous games, to make clouds look exactly like from GTA VC/III. timecyc24.asi is important, otherwise it won't work. SkyGFX  "https://github.com/aap/skygfx/releases/tag/v4.2b" is needed too, otherwise it will be dark. For some reason.
+It's not important, but if you want GTA VC/III look, then install it. timecyc_24h.dat in "data" folder, timecyc24.asi in game root folder.
+Enjoy :)
 
 
 ![gallery122](https://github.com/TheArtemMaps/fluffyclouds-sa/assets/91487356/11a11b56-7a17-482f-ad58-ddb342b62919)
