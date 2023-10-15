@@ -1,5 +1,5 @@
 
-##Fluffy Clouds mod for GTA SA
+## Fluffy Clouds mod for GTA SA
 Created by TheArtemMaps (me) thanks to RE3 team for source code of GTA VC and GTA 3. It wouldn't be possible, if it wasn't for them.
 This mod adds big clouds from previous GTA games like GTA VC/III.
 They react to wind, weather, and use BottomCloudRGB color from timecyc, which means you can color them.
