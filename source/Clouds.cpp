@@ -18,9 +18,11 @@
 #include "Sprite2.h"
 #include "CSprite.h"
 #include "CTimeCycle.h"
-#define NO_FLUFF_AT_HEIGHTS
+//#define NO_FLUFF_AT_HEIGHTS
 #define FLUFF_Z_OFFSET 55.0f // 40.0f
 #define FLUFF_ALPHA 160 // Fluffy clouds alpha level
+#define RwV3dAddMacro(o, a, b)                                                                                      
+#define RwV3dAdd(o, a, b)               RwV3dAddMacro(o, a, b)
 
 using namespace plugin;
 inline float sq(float x) { return x * x; }
@@ -43,7 +45,7 @@ CClouds::Init(void)
 {
 	CTxdStore::PushCurrentTxd();
 	int32_t fluffycloud = CTxdStore::AddTxdSlot("fluffycloudsSA");
-	CTxdStore::LoadTxd(fluffycloud, "MODELS\\FLUFFYCLOUDSSA.TXD");
+	CTxdStore::LoadTxd(fluffycloud, GAME_PATH((char*)"MODELS\\FLUFFYCLOUDSSA.TXD"));
 	int32_t slotfluff = CTxdStore::FindTxdSlot("fluffycloudsSA");
 	CTxdStore::SetCurrentTxd(slotfluff);
 	gpCloudTex[3] = RwTextureRead("cloudmasked", NULL);
@@ -62,8 +64,6 @@ CClouds::Shutdown(void)
 	RwTextureDestroy(gpCloudTex[4]);
 	gpCloudTex[4] = NULL;
 }
-
-
 
 void
 CClouds::Update(void)
@@ -132,6 +132,13 @@ CClouds::Render(void)
 	float rot_sin = sin(CloudRotation);
 	float rot_cos = cos(CloudRotation);
 
+	RwRenderStateSet(rwRENDERSTATEZWRITEENABLE, (void*)FALSE);
+	RwRenderStateSet(rwRENDERSTATEZTESTENABLE, (void*)FALSE);
+	RwRenderStateSet(rwRENDERSTATEVERTEXALPHAENABLE, (void*)TRUE);
+	RwRenderStateSet(rwRENDERSTATESRCBLEND, (void*)rwBLENDONE);
+	RwRenderStateSet(rwRENDERSTATEDESTBLEND, (void*)rwBLENDONE);
+
+
 #ifdef NO_FLUFF_AT_HEIGHTS // Comment out "#define NO_FLUFF_AT_HEIGHTS" to not have this feature or remove comment to have this
 	if (campos.z > FLUFF_Z_OFFSET)
 	{
@@ -152,13 +159,13 @@ CClouds::Render(void)
 
 			if (CSprite::CalcScreenCoors(worldpos, &screenpos, &szx, &szy, false, false)) {
 				sundist = sqrt(sq(screenpos.x - CCoronas::SunScreenX) + sq(screenpos.y - CCoronas::SunScreenY));
-				//i will use current volumetric clouds color
+				//i will use current fluffy clouds color
 				int tr = CTimeCycle::m_CurrentColours.m_nFluffyCloudsBottomRed;
 				int tg = CTimeCycle::m_CurrentColours.m_nFluffyCloudsBottomGreen;
 				int tb = CTimeCycle::m_CurrentColours.m_nFluffyCloudsBottomBlue;
-				int br = (int)(CTimeCycle::m_CurrentColours.m_nFluffyCloudsBottomRed * 0.85f);
-				int bg = (int)(CTimeCycle::m_CurrentColours.m_nFluffyCloudsBottomGreen * 0.85f);
-				int bb = (int)(CTimeCycle::m_CurrentColours.m_nFluffyCloudsBottomBlue * 0.85f);
+				int br = CTimeCycle::m_CurrentColours.m_nFluffyCloudsBottomRed;
+				int bg = CTimeCycle::m_CurrentColours.m_nFluffyCloudsBottomGreen;
+				int bb = CTimeCycle::m_CurrentColours.m_nFluffyCloudsBottomBlue;
 				/*int tr = ms_colourTop.r = 190;
 				int tg = ms_colourTop.g = 190;
 				int tb = ms_colourTop.b = 190;
@@ -172,11 +179,11 @@ CClouds::Render(void)
 				if (sundist < distLimit) {
 					hilight = (1.0f - max(CWeather::Foggyness, CWeather::CloudCoverage)) * (1.0f - sundist / (float)distLimit);
 					tr = tr * (1.0f - hilight) + 255 * hilight;
-					tg = tg * (1.0f - hilight) + 150 * hilight;
-					tb = tb * (1.0f - hilight) + 150 * hilight;
+					tg = tg * (1.0f - hilight) + 190 * hilight;
+					tb = tb * (1.0f - hilight) + 190 * hilight;
 					br = br * (1.0f - hilight) + 255 * hilight;
-					bg = bg * (1.0f - hilight) + 150 * hilight;
-					bb = bb * (1.0f - hilight) + 150 * hilight;
+					bg = bg * (1.0f - hilight) + 190 * hilight;
+					bb = bb * (1.0f - hilight) + 190 * hilight;
 					CloudHighlight[i] = hilight;
 					if (sundist < sundistBlocked) CCoronas::SunBlockedByClouds = (fluffyalpha > (FLUFF_ALPHA / 2));
 					//CCoronas::SunBlockedByClouds = true;

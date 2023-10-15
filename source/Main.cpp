@@ -1,5 +1,5 @@
-#include "plugin.h"
 
+#include "plugin.h"
 #include "Clouds.h"
 //#include "debugmenu_public.h"
 //DebugMenuAPI gDebugMenuAPI;
@@ -8,23 +8,23 @@ plugin::ThiscallEvent<AddressList<0x7178F0, H_CALL>, PRIORITY_BEFORE, ArgPickNon
 
 class FluffyCloudsSA {
 public:
-    FluffyCloudsSA() {
-        plugin::Events::initRwEvent += []() {
-            CClouds::Init();
-        };
+	FluffyCloudsSA() {
+		plugin::Events::initRwEvent += []() {
+			CClouds::Init();
+		};
 
-        plugin::Events::gameProcessEvent += []() {
-            CClouds::Update();
-        };
-        /*if (DebugMenuLoad()) {
-            DebugMenuAddVarBool8("Rendering", "Fluffy clouds invisible", (int8_t*)&CClouds::FluffyCloudsInvisible, NULL);
-        }*/
-        movingThingsEvent += []() {
-            CClouds::Render();
-        };
+		plugin::Events::gameProcessEvent += []() {
+			CClouds::Update();
+		};
+		/*if (DebugMenuLoad()) {
+			DebugMenuAddVarBool8("Rendering", "Fluffy clouds invisible", (int8_t*)&CClouds::FluffyCloudsInvisible, NULL);
+		}*/
+		movingThingsEvent += []() {
+			CClouds::Render();
+		};
 
-        plugin::Events::shutdownRwEvent += []() {
-            CClouds::Shutdown();
-        };
-    }
+		plugin::Events::shutdownRwEvent += []() {
+			CClouds::Shutdown();
+		};
+	}
 } FluffyCloudsSA;
