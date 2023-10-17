@@ -2,8 +2,8 @@
 
 class CSprite2
 {
-	static float m_f2DNearScreenZ;
-	static float m_f2DFarScreenZ;
+	static float& m_f2DNearScreenZ;
+	static float& m_f2DFarScreenZ;
 	static float m_fRecipNearClipPlane;
 	static int32_t m_bFlushSpriteBufferSwitchZTest;
 public:

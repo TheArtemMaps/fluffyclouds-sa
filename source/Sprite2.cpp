@@ -6,8 +6,10 @@
 
 using namespace std;
 
-float CSprite2::m_f2DNearScreenZ;
-float CSprite2::m_f2DFarScreenZ;
+//float CSprite2::m_f2DNearScreenZ;
+//float CSprite2::m_f2DFarScreenZ;
+float& CSprite2::m_f2DNearScreenZ = *(float*)0xC4B8D8;
+float& CSprite2::m_f2DFarScreenZ = *(float*)0xC4B8D4;
 float CSprite2::m_fRecipNearClipPlane;
 int32_t CSprite2::m_bFlushSpriteBufferSwitchZTest;
 
@@ -15,6 +17,7 @@ int32_t CSprite2::m_bFlushSpriteBufferSwitchZTest;
 static int32_t nSpriteBufferIndex;
 static RwIm2DVertex SpriteBufferVerts[SPRITEBUFFERSIZE*6];
 static RwIm2DVertex verts[4];
+
 #define RwIm2DGetNearScreenZMacro() (RWSRCGLOBAL(dOpenDevice).zBufferNear)
 #define RwIm2DGetNearScreenZ() RwIm2DGetNearScreenZMacro()
 #define RwIm2DGetFarScreenZMacro() (RWSRCGLOBAL(dOpenDevice).zBufferFar)
