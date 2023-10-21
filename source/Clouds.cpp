@@ -1,13 +1,10 @@
 #include "plugin.h"
 
 #include "CGeneral.h"
-#include "CTimer.h"
 #include "CWeather.h"
 #include "CCamera.h"
 #include "CWorld.h"
 #include "CTxdStore.h"
-#include "CVector.h"
-
 
 #include "Clouds.h"
 
@@ -17,7 +14,8 @@
 #include "CClock.h"
 #include "Sprite2.h"
 #include "CSprite.h"
-#include "CTimeCycle.h"
+#include "TimeCycle.h"
+#include "CTimer.h"
 //#define NO_FLUFF_AT_HEIGHTS
 #define FLUFF_Z_OFFSET 55.0f // 40.0f
 #define FLUFF_ALPHA 160 // Fluffy clouds alpha level
@@ -69,8 +67,8 @@ void
 CClouds::Update(void)
 {
 	float s = sin(TheCamera.m_fOrientation - 0.85f);
-	CloudRotation += CWeather::Wind * s * 0.001f * CClouds::GetTimeStepFix();
-	IndividualRotation += (CWeather::Wind * CTimer::ms_fTimeStep * 0.5f + 0.3f * CClouds::GetTimeStepFix()) * 60.0f;
+	CloudRotation += CWeather::Wind * s * 0.0025f * CClouds::GetTimeStepFix();
+	IndividualRotation += (CWeather::Wind * CTimer::ms_fTimeStep + 0.3f * CClouds::GetTimeStepFix()) * 60.0f;
 	/*if (FluffyCloudsInvisible) {
 		fluffyalpha2 -= 5;
 		if (fluffyalpha2 < 0)
@@ -160,12 +158,12 @@ CClouds::Render(void)
 			if (CSprite::CalcScreenCoors(worldpos, &screenpos, &szx, &szy, false, false)) {
 				sundist = sqrt(sq(screenpos.x - CCoronas::SunScreenX) + sq(screenpos.y - CCoronas::SunScreenY));
 				//i will use current fluffy clouds color
-				int tr = CTimeCycle::m_CurrentColours.m_nFluffyCloudsBottomRed;
-				int tg = CTimeCycle::m_CurrentColours.m_nFluffyCloudsBottomGreen;
-				int tb = CTimeCycle::m_CurrentColours.m_nFluffyCloudsBottomBlue;
-				int br = CTimeCycle::m_CurrentColours.m_nFluffyCloudsBottomRed;
-				int bg = CTimeCycle::m_CurrentColours.m_nFluffyCloudsBottomGreen;
-				int bb = CTimeCycle::m_CurrentColours.m_nFluffyCloudsBottomBlue;
+				int tr = CTimeCycle2::m_CurrentColours.fluffycloudtopr;
+				int tg = CTimeCycle2::m_CurrentColours.fluffycloudtopg;
+				int tb = CTimeCycle2::m_CurrentColours.fluffycloudtopb;
+				int br = CTimeCycle2::m_CurrentColours.fluffycloudr;
+				int bg = CTimeCycle2::m_CurrentColours.fluffycloudg;
+				int bb = CTimeCycle2::m_CurrentColours.fluffycloudb;
 				/*int tr = ms_colourTop.r = 190;
 				int tg = ms_colourTop.g = 190;
 				int tb = ms_colourTop.b = 190;
