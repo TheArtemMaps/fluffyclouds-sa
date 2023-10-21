@@ -183,23 +183,21 @@ CClouds::Render(void)
 					bg = bg * (1.0f - hilight) + 190 * hilight;
 					bb = bb * (1.0f - hilight) + 190 * hilight;
 					CloudHighlight[i] = hilight;
-					if (sundist < sundistBlocked) CCoronas::SunBlockedByClouds = (fluffyalpha > (FLUFF_ALPHA / 2));
-					//CCoronas::SunBlockedByClouds = true;
+					if (sundist < SCREEN_WIDTH / 10)
+						CCoronas::SunBlockedByClouds = true;
 				}
 				else
-				{
-					//hilight = 0.0f;
-					CloudHighlight[i] = 0.0f;
-				}
-				CloudToSunDistance[i] = sundist;
+					hilight = 0.0f;
+				CSprite2::RenderBufferedOneXLUSprite_Rotate_2Colours(screenpos.x, screenpos.y, screenpos.z,
+					szx * 55.0f, szy * 55.0f,
+					tr, tg, tb, br, bg, bb, 0.0f, -1.0f,
+					1.0f / screenpos.z,
+					(uint16_t)IndividualRotation / 65336.0f * 6.28f + ms_cameraRoll,
+					fluffyalpha);
 				bCloudOnScreen[i] = true;
-				CSprite2::RenderBufferedOneXLUSprite_Rotate_2Colours(screenpos.x, screenpos.y, screenpos.z, szx * 55.0f, szy * 55.0f, tr, tg, tb, br, bg, bb, 0.0f, -1.0f,
-					1.0f / screenpos.z, (uint16_t)IndividualRotation / 65336.0f * 6.28f + ms_cameraRoll, fluffyalpha);
 			}
 			else
-			{
 				bCloudOnScreen[i] = false;
-			}
 		}
 		CSprite2::FlushSpriteBuffer();
 		// Highlights
@@ -214,10 +212,10 @@ CClouds::Render(void)
 			worldpos.z = pos.z;
 			if (bCloudOnScreen[i] && CSprite::CalcScreenCoors(worldpos, &screenpos, &szx, &szy, false, false)) {
 				// BUG: this is stupid....would have to do this for each cloud individually
-				if (CloudHighlight[i] > 0) {
+				if (hilight > 0.0f) {
 					CSprite2::RenderBufferedOneXLUSprite_Rotate_Aspect(screenpos.x, screenpos.y, screenpos.z,
 						szx * 30.0f, szy * 30.0f,
-						200 * CloudHighlight[i], 0, 0, 255, 1.0f / screenpos.z,
+						200 * hilight, 0, 0, 255, 1.0f / screenpos.z,
 						1.7f - CGeneral::GetATanOfXY(screenpos.x - CCoronas::SunScreenX, screenpos.y - CCoronas::SunScreenY) + CClouds::ms_cameraRoll, 255);
 				}
 			}

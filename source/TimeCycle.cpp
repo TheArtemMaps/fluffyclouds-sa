@@ -398,7 +398,7 @@ CTimeCycle2::CalcColoursForPoint(float x, float y, float z, CColourSet2* colorse
 
 		colorset->fogst = colorset->fogst * invboxf + m_fFogStart[boxHour][boxWeather] * boxf;
 
-		colorset->postfx1r = colorset->postfx1r * invboxf + m_fPostFx1Red[boxHour][boxWeather] * boxf;
+		/*colorset->postfx1r = colorset->postfx1r * invboxf + m_fPostFx1Red[boxHour][boxWeather] * boxf;
 		colorset->postfx1g = colorset->postfx1g * invboxf + m_fPostFx1Green[boxHour][boxWeather] * boxf;
 		colorset->postfx1b = colorset->postfx1b * invboxf + m_fPostFx1Blue[boxHour][boxWeather] * boxf;
 		colorset->postfx1a = colorset->postfx1a * invboxf + m_fPostFx1Alpha[boxHour][boxWeather] * boxf;
@@ -406,7 +406,16 @@ CTimeCycle2::CalcColoursForPoint(float x, float y, float z, CColourSet2* colorse
 		colorset->postfx2r = colorset->postfx2r * invboxf + m_fPostFx2Red[boxHour][boxWeather] * boxf;
 		colorset->postfx2g = colorset->postfx2g * invboxf + m_fPostFx2Green[boxHour][boxWeather] * boxf;
 		colorset->postfx2b = colorset->postfx2b * invboxf + m_fPostFx2Blue[boxHour][boxWeather] * boxf;
-		colorset->postfx2a = colorset->postfx2a * invboxf + m_fPostFx2Alpha[boxHour][boxWeather] * boxf;
+		colorset->postfx2a = colorset->postfx2a * invboxf + m_fPostFx2Alpha[boxHour][boxWeather] * boxf;*/     
+		colorset->postfx1r *= invboxf + (float)m_fPostFx1Red[boxHour][boxWeather] * boxf;
+		colorset->postfx1g *= invboxf + (float)m_fPostFx1Green[boxHour][boxWeather] * boxf;
+		colorset->postfx1b *= invboxf + (float)m_fPostFx1Blue[boxHour][boxWeather] * boxf;
+		colorset->postfx1a *= invboxf + (float)m_fPostFx1Alpha[boxHour][boxWeather] * boxf;
+
+		colorset->postfx2r *= invboxf + (float)m_fPostFx2Red[boxHour][boxWeather] * boxf;
+		colorset->postfx2g *= invboxf + (float)m_fPostFx2Green[boxHour][boxWeather] * boxf;
+		colorset->postfx2b *= invboxf + (float)m_fPostFx2Blue[boxHour][boxWeather] * boxf;
+		colorset->postfx2a *= invboxf + (float)m_fPostFx2Alpha[boxHour][boxWeather] * boxf;
 	}
 
 	if (lodBox)
