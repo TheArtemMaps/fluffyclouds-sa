@@ -10,7 +10,6 @@
 #include "CShadows.h"
 #include "CCamera.h"
 #include "CFileMgr.h"
-#include "Weather.h"
 #include "gta.h"
 #include "CWeather.h"
 #include "CTimer.h"
@@ -139,7 +138,7 @@ CTimeCycle2::Initialise(bool unused)
 	int topcloudr, topcloudg, topcloudb;
 
 	CFileMgr::SetDir("DATA");
-	fd = CFileMgr::OpenFile("TIMECYC_24H.DAT", "rb");
+	fd = CFileMgr::OpenFile("TIMECYC_FLUFFY.DAT", "rb");
 	CFileMgr::SetDir("");
 
 	for (w = 0; w < NUMWEATHERS; w++)

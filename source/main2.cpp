@@ -206,7 +206,7 @@ patch(void)
 	Patch<void*>(0x560C61, (void*)&CTimeCycle2::m_nAmbientRed);
 	Patch<void*>(0x5BBD11, (void*)&CTimeCycle2::m_nAmbientRed);
 
-	static char* timecycstr = "timecyc_24h.dat";
+	static char* timecycstr = "timecyc_fluffy.dat";
 	Patch<char*>(0x5BBAD9 + 1, timecycstr);
 	Patch<int>(0x5BBB18 + 1, NUMHOURS);
 
