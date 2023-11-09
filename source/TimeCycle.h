@@ -77,6 +77,12 @@ public:
 	static uchar m_nAmbientGreen_Obj[NUMHOURS][NUMWEATHERS];
 	static uchar m_nAmbientRed_Obj[NUMHOURS][NUMWEATHERS];
 	static uchar m_nAmbientBlue[NUMHOURS][NUMWEATHERS];
+	static int32 m_nCurrentFluffyCloudsTopRed;
+	static int32 m_nCurrentFluffyCloudsTopGreen;
+	static int32 m_nCurrentFluffyCloudsTopBlue;
+	static int32 m_nCurrentFluffyCloudsBottomRed;
+	static int32 m_nCurrentFluffyCloudsBottomGreen;
+	static int32 m_nCurrentFluffyCloudsBottomBlue;
 	static uchar m_nAmbientGreen[NUMHOURS][NUMWEATHERS];
 	static uchar m_nAmbientRed[NUMHOURS][NUMWEATHERS];
 	static uint8 m_nFluffyCloudsTopRed[NUMHOURS][NUMWEATHERS];
@@ -103,8 +109,8 @@ public:
 	static int& m_CurrentStoredValue;
 	static RwRGBA& m_BelowHorizonGrey;
 #ifdef REPLACE
-	static CColourSet m_CurrentColours;
-	static CColourSet& m_CurrentColours_exe;
+	static CColourSet2 m_CurrentColours;
+	static CColourSet2& m_CurrentColours_exe;
 #else
 	static CColourSet2& m_CurrentColours;
 #endif

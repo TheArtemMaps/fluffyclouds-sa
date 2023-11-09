@@ -222,18 +222,12 @@ patch(void)
 	InjectHook(0x5605DA, mod24_1, PATCH_JUMP);
 	InjectHook(0x561158, mod24_2, PATCH_JUMP);
 	InjectHook(0x55FEC0, CTimeCycle2::StartExtraColour, PATCH_JUMP);
-	InjectHook(0x5BBAC0, CTimeCycle2::Initialise, PATCH_JUMP);
-	InjectHook(0x55F4B0, &CColourSet2::ctor, PATCH_JUMP);
-	InjectHook(0x55F870, &CColourSet2::Interpolate, PATCH_JUMP);
-	InjectHook(0x5603D0, CTimeCycle2::CalcColoursForPoint, PATCH_JUMP);
-	InjectHook(0x5616E0, CTimeCycle2::FindFarClipForCoors, PATCH_JUMP);
-	InjectHook(0x561760, CTimeCycle2::Update, PATCH_JUMP);
 
 #ifdef REPLACE
 	// replace functions!
 	InjectHook(0x5BBAC0, CTimeCycle2::Initialise, PATCH_JUMP);
-	InjectHook(0x55F4B0, &CColourSet::ctor, PATCH_JUMP);
-	InjectHook(0x55F870, &CColourSet::Interpolate, PATCH_JUMP);
+	InjectHook(0x55F4B0, &CColourSet2::ctor, PATCH_JUMP);
+	InjectHook(0x55F870, &CColourSet2::Interpolate, PATCH_JUMP);
 	InjectHook(0x5603D0, CTimeCycle2::CalcColoursForPoint, PATCH_JUMP);
 	InjectHook(0x5616E0, CTimeCycle2::FindFarClipForCoors, PATCH_JUMP);
 	InjectHook(0x561760, CTimeCycle2::Update, PATCH_JUMP);

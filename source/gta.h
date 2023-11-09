@@ -13,7 +13,7 @@
 
 // when this is defined, the whole TimeCycle is replaced,
 // not just patched to use 24 hours
-//#define REPLACE
+#define REPLACE
 
 typedef unsigned char uchar;
 typedef unsigned short ushort;

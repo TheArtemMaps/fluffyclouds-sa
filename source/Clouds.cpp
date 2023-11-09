@@ -1,4 +1,4 @@
-#include "plugin.h"
+//#include "plugin.h"
 
 #include "CGeneral.h"
 #include "CWeather.h"
@@ -12,15 +12,16 @@
 #include "CGame.h"
 #include "CCoronas.h"
 #include "CClock.h"
-#include "Sprite2.h"
 #include "CSprite.h"
 #include "TimeCycle.h"
 #include "CTimer.h"
+#include <extensions/Paths.h>
+#include <game_sa/common.h>
+
 //#define NO_FLUFF_AT_HEIGHTS
 #define FLUFF_Z_OFFSET 55.0f // 40.0f
 #define FLUFF_ALPHA 160 // Fluffy clouds alpha level
-#define RwV3dAddMacro(o, a, b)                                                                                      
-#define RwV3dAdd(o, a, b)               RwV3dAddMacro(o, a, b)
+
 
 using namespace plugin;
 inline float sq(float x) { return x * x; }
@@ -34,8 +35,6 @@ float CClouds::CloudRotation;
 float CloudHighlight[37];
 float CloudToSunDistance[37];
 uint32_t CClouds::IndividualRotation;
-
-
 
 
 void
@@ -112,7 +111,7 @@ CClouds::Render(void)
 {
 	int fluffyalpha = FLUFF_ALPHA * (1.0f - max(CWeather::Foggyness, CWeather::ExtraSunnyness));
 	if (fluffyalpha > 255) fluffyalpha = 255;
-	CSprite2::InitSpriteBuffer();
+	CSprite::InitSpriteBuffer();
 	//fluffy clouds
 	if (!CGame::CanSeeOutSideFromCurrArea())
 		return;
@@ -125,11 +124,9 @@ CClouds::Render(void)
 	float szx, szy;
 	RwV3d screenpos;
 	RwV3d worldpos;
-
 	CVector campos = TheCamera.GetPosition();
 	float rot_sin = sin(CloudRotation);
 	float rot_cos = cos(CloudRotation);
-
 	RwRenderStateSet(rwRENDERSTATEZWRITEENABLE, (void*)FALSE);
 	RwRenderStateSet(rwRENDERSTATEZTESTENABLE, (void*)FALSE);
 	RwRenderStateSet(rwRENDERSTATEVERTEXALPHAENABLE, (void*)TRUE);
@@ -171,9 +168,7 @@ CClouds::Render(void)
 				int bg = ms_colourBottom.g = 0;
 				int bb = ms_colourBottom.b = 0; //old rgb method*/
 
-				int distLimit = (3.0f * (float)(SCREEN_WIDTH)) / 4.0f;
-				float sundistBlocked = (float)(SCREEN_WIDTH) / 10.0f;
-				float sundistHilit = (float)(SCREEN_WIDTH) / 3.0;
+				int distLimit = (3 * SCREEN_WIDTH) / 4;
 				if (sundist < distLimit) {
 					hilight = (1.0f - max(CWeather::Foggyness, CWeather::CloudCoverage)) * (1.0f - sundist / (float)distLimit);
 					tr = tr * (1.0f - hilight) + 255 * hilight;
@@ -182,13 +177,12 @@ CClouds::Render(void)
 					br = br * (1.0f - hilight) + 255 * hilight;
 					bg = bg * (1.0f - hilight) + 190 * hilight;
 					bb = bb * (1.0f - hilight) + 190 * hilight;
-					CloudHighlight[i] = hilight;
 					if (sundist < SCREEN_WIDTH / 10)
 						CCoronas::SunBlockedByClouds = true;
 				}
 				else
 					hilight = 0.0f;
-				CSprite2::RenderBufferedOneXLUSprite_Rotate_2Colours(screenpos.x, screenpos.y, screenpos.z,
+				CSprite::RenderBufferedOneXLUSprite_Rotate_2Colours(screenpos.x, screenpos.y, screenpos.z,
 					szx * 55.0f, szy * 55.0f,
 					tr, tg, tb, br, bg, bb, 0.0f, -1.0f,
 					1.0f / screenpos.z,
@@ -199,28 +193,30 @@ CClouds::Render(void)
 			else
 				bCloudOnScreen[i] = false;
 		}
-		CSprite2::FlushSpriteBuffer();
+		CSprite::FlushSpriteBuffer();
+
 		// Highlights
 		RwRenderStateSet(rwRENDERSTATESRCBLEND, (void*)rwBLENDONE);
 		RwRenderStateSet(rwRENDERSTATEDESTBLEND, (void*)rwBLENDONE);
 		RwRenderStateSet(rwRENDERSTATETEXTURERASTER, RwTextureGetRaster(gpCloudTex[4]));
 
 		for (i = 0; i < 37; i++) {
-			RwV3d pos = { 2.0f * CoorsOffsetX[i], 2.0f * CoorsOffsetY[i], 40.0f * CoorsOffsetZ[i] + FLUFF_Z_OFFSET };
+			RwV3d pos = { 2.0f * CoorsOffsetX[i], 2.0f * CoorsOffsetY[i], 40.0f * CoorsOffsetZ[i] + 40.0f };
 			worldpos.x = pos.x * rot_cos + pos.y * rot_sin + campos.x;
 			worldpos.y = pos.x * rot_sin - pos.y * rot_cos + campos.y;
 			worldpos.z = pos.z;
 			if (bCloudOnScreen[i] && CSprite::CalcScreenCoors(worldpos, &screenpos, &szx, &szy, false, false)) {
 				// BUG: this is stupid....would have to do this for each cloud individually
 				if (hilight > 0.0f) {
-					CSprite2::RenderBufferedOneXLUSprite_Rotate_Aspect(screenpos.x, screenpos.y, screenpos.z,
+					CSprite::RenderBufferedOneXLUSprite_Rotate_Aspect(screenpos.x, screenpos.y, screenpos.z,
 						szx * 30.0f, szy * 30.0f,
 						200 * hilight, 0, 0, 255, 1.0f / screenpos.z,
 						1.7f - CGeneral::GetATanOfXY(screenpos.x - CCoronas::SunScreenX, screenpos.y - CCoronas::SunScreenY) + CClouds::ms_cameraRoll, 255);
 				}
 			}
 		}
-		CSprite2::FlushSpriteBuffer();
+		CSprite::FlushSpriteBuffer();
+	}
 
 		RwRenderStateSet(rwRENDERSTATEVERTEXALPHAENABLE, (void*)0);
 		RwRenderStateSet(rwRENDERSTATEZWRITEENABLE, (void*)1);
@@ -228,4 +224,3 @@ CClouds::Render(void)
 		RwRenderStateSet(rwRENDERSTATESRCBLEND, (void*)rwBLENDSRCALPHA);
 		RwRenderStateSet(rwRENDERSTATEDESTBLEND, (void*)rwBLENDINVSRCALPHA);
 	}
-}

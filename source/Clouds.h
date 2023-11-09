@@ -1,4 +1,5 @@
 #pragma once
+#include <game_sa/CTimer.h>
 class CClouds
 {
 public:

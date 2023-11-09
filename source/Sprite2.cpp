@@ -4,11 +4,12 @@
 #include "Sprite2.h"
 #include "CScene.h"
 #include <extensions/Screen.h>
+#include "Clouds.h"
 
 using namespace std;
 
-float& CSprite2::m_f2DNearScreenZ = *(float*)0xC4B8D8;
-float& CSprite2::m_f2DFarScreenZ = *(float*)0xC4B8D4;
+float CSprite2::m_f2DNearScreenZ;
+float CSprite2::m_f2DFarScreenZ;
 float CSprite2::m_fRecipNearClipPlane;
 int32_t CSprite2::m_bFlushSpriteBufferSwitchZTest;
 
@@ -20,6 +21,7 @@ static RwIm2DVertex verts[4];
 #define RwIm2DGetNearScreenZ() RwIm2DGetNearScreenZMacro()
 #define RwIm2DGetFarScreenZMacro() (RWSRCGLOBAL(dOpenDevice).zBufferFar)
 #define RwIm2DGetFarScreenZ() RwIm2DGetFarScreenZMacro()
+
 
 void
 CSprite2::InitSpriteBuffer(void)
@@ -41,6 +43,7 @@ CSprite2::FlushSpriteBuffer(void)
 		nSpriteBufferIndex = 0;
 	}
 }
+
 
 void
 CSprite2::RenderBufferedOneXLUSprite_Rotate_Aspect(float x, float y, float z, float w, float h, uint8_t r, uint8_t g, uint8_t b, int16_t intens, float recipz, float rotation, uint8_t a)

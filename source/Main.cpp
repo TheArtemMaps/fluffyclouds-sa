@@ -4,6 +4,7 @@
 //#include "debugmenu_public.h"
 //DebugMenuAPI gDebugMenuAPI;
 using namespace plugin;
+
 plugin::ThiscallEvent<AddressList<0x7178F0, H_CALL>, PRIORITY_BEFORE, ArgPickNone, void()> movingThingsEvent;
 
 class FluffyCloudsSA {
